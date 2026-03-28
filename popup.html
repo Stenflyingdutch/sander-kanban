@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cookidoo Rezept-Finder</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-icon">🍳</div>
+      <h1>Cookidoo Rezept-Finder</h1>
+      <p class="subtitle">50 Rezepte · ≤45 Min · ★ 4+ · Hähnchen/Rind/Hack/Fisch/Veggie</p>
+    </header>
+
+    <!-- Status Message -->
+    <div id="status" class="status hidden">
+      <div class="status-icon">⏳</div>
+      <div class="status-text">Prüfe Verbindung...</div>
+    </div>
+
+    <!-- Not on Cookidoo Warning -->
+    <div id="not-cookidoo" class="warning hidden">
+      <div class="warning-icon">⚠️</div>
+      <p>Bitte öffne zuerst <a href="https://cookidoo.de" target="_blank">cookidoo.de</a> und melde dich an.</p>
+    </div>
+
+    <!-- Search Button -->
+    <div id="search-section" class="section">
+      <button id="btn-search" class="btn btn-primary">
+        <span class="btn-icon">🔍</span>
+        <span class="btn-text">Rezepte finden</span>
+      </button>
+      <button id="btn-load-current-ingredients" class="btn btn-secondary" style="margin-top:8px">
+        <span class="btn-icon">🧾</span>
+        <span class="btn-text">Aktuelle Zutaten öffnen</span>
+      </button>
+    </div>
+
+    <!-- Progress -->
+    <div id="progress" class="progress hidden">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text" id="progress-text">Suche läuft...</div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="results hidden">
+      <div class="results-header">
+        <h2>Gefundene Rezepte</h2>
+        <div class="results-actions">
+          <button id="btn-refresh" class="btn btn-sm" title="Neue Rezepte suchen">🔄 Neue Suche</button>
+          <button id="btn-select-all" class="btn btn-sm">Alle</button>
+          <button id="btn-deselect-all" class="btn btn-sm">Keine</button>
+        </div>
+      </div>
+
+      <div id="recipe-list" class="recipe-list"></div>
+
+      <div class="results-footer">
+        <div class="selected-count">
+          <span id="selected-count">0</span> Rezepte ausgewählt
+        </div>
+        <button id="btn-add-to-list" class="btn btn-success" disabled>
+          <span class="btn-icon">🛒</span>
+          <span class="btn-text">Zur Cookidoo-Einkaufsliste</span>
+        </button>
+        <button id="btn-add-to-bring" class="btn btn-bring" disabled>
+          <span class="btn-icon">📲</span>
+          <span class="btn-text">Zutaten an Bring! senden</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Adding Progress -->
+    <div id="adding-progress" class="section hidden">
+      <div class="adding-status">
+        <div class="spinner"></div>
+        <span id="adding-text">Füge Rezepte zur Einkaufsliste hinzu...</span>
+      </div>
+    </div>
+
+    <!-- Ingredient Review -->
+    <div id="ingredient-review" class="section hidden">
+      <div class="results-header">
+        <h2>Zutaten für Bring!</h2>
+        <div class="results-actions">
+          <button id="btn-ingredients-reload" class="btn btn-sm" title="Aktuelle Cookidoo-Liste neu laden">Neu laden</button>
+          <button id="btn-ingredients-clear" class="btn btn-sm" title="Aktuelle Zutatenansicht leeren">Leeren</button>
+          <button id="btn-ingredients-select-all" class="btn btn-sm">Alle</button>
+          <button id="btn-ingredients-deselect-all" class="btn btn-sm">Keine</button>
+        </div>
+      </div>
+
+      <p class="ingredient-review-text">
+        Wähle die Zutaten aus, die an Bring! übertragen werden sollen.
+      </p>
+
+      <div class="selected-count">
+        <span id="ingredient-selected-count">0</span> Zutaten ausgewählt
+      </div>
+
+      <div id="ingredient-category-list" class="ingredient-category-list"></div>
+
+      <div class="results-footer">
+        <button id="btn-send-selected-to-bring" class="btn btn-bring" disabled>
+          <span class="btn-icon">📲</span>
+          <span class="btn-text">An Bring! übertragen</span>
+        </button>
+        <button id="btn-ingredient-back" class="btn btn-secondary">
+          <span class="btn-icon">↩️</span>
+          <span class="btn-text">Zur Rezeptauswahl</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Done -->
+    <div id="done" class="section hidden">
+      <div class="done-icon">✅</div>
+      <p class="done-text" id="done-text">Fertig!</p>
+      <button id="btn-done-send-to-bring" class="btn btn-bring hidden">
+        <span class="btn-icon">📲</span>
+        <span class="btn-text">Jetzt an Bring! senden</span>
+      </button>
+      <button id="btn-open-list" class="btn btn-primary">
+        <span class="btn-icon">📋</span>
+        <span class="btn-text">Einkaufsliste öffnen</span>
+      </button>
+      <button id="btn-restart" class="btn btn-secondary">
+        <span class="btn-icon">🔄</span>
+        <span class="btn-text">Neue Suche</span>
+      </button>
+    </div>
+
+    <!-- No Results -->
+    <div id="no-results" class="section hidden">
+      <div class="no-results-icon">😕</div>
+      <p>Keine passenden Rezepte gefunden. Cookidoo benötigt ein aktives Abo um Suchergebnisse anzuzeigen.</p>
+      <button id="btn-retry" class="btn btn-secondary">
+        <span class="btn-icon">🔄</span>
+        <span class="btn-text">Erneut versuchen</span>
+      </button>
+    </div>
+
+    <!-- Fallback Info -->
+    <div id="fallback-info" class="section hidden">
+      <div class="info-box">
+        <p>⚠️ Die automatische Einkaufslisten-Funktion konnte nicht genutzt werden.</p>
+        <p>Klicke auf die Rezept-Links unten und füge sie manuell zur Einkaufsliste hinzu:</p>
+        <div id="fallback-links"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Einkaufsliste Dashboard</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #f7f6f3;
+      --card: #fff;
+      --border: #e8e6e1;
+      --text: #1a1a1a;
+      --muted: #999;
+      --cookidoo: #e85d2a;
+      --bring: #2db84b;
+      --dark: #1a1a1a;
+    }
+
+    body {
+      font-family: 'DM Sans', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--dark);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .subtitle { font-size: 13px; color: #999; margin-top: 2px; }
+
+    .main { max-width: 960px; margin: 0 auto; padding: 24px; }
+
+    /* ─── Source Cards ─────────────────────────── */
+    .sources { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    .source-card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+    .source-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .source-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 24px;
+    }
+    .source-icon.cookidoo { background: #e85d2a18; }
+    .source-icon.bring { background: #2db84b22; }
+    .source-title { font-size: 16px; font-weight: 700; }
+    .source-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .load-btn {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px dashed #ddd;
+      background: #fafaf8;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .load-btn:hover { border-color: #bbb; background: #f2f0ec; }
+    .load-btn.loading { opacity: 0.6; pointer-events: none; }
+    .load-btn.cookidoo-btn:hover { border-color: var(--cookidoo); color: var(--cookidoo); }
+    .load-btn.bring-btn:hover { border-color: var(--bring); color: var(--bring); }
+
+    .item-count {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 10px;
+      text-align: right;
+    }
+    .item-preview {
+      margin-top: 10px;
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      color: #555;
+      line-height: 1.7;
+      padding: 10px 12px;
+      background: #fafaf8;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+    .item-preview-line {
+      padding: 2px 0;
+      border-bottom: 1px solid #f2f0ec;
+    }
+    .item-preview-line:last-child { border: none; }
+
+    /* ─── Consolidate Button ──────────────────── */
+    .consolidate-bar { text-align: center; margin-bottom: 24px; }
+    .consolidate-btn {
+      background: var(--dark);
+      border: none;
+      color: #fff;
+      padding: 14px 40px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      transition: transform 0.1s;
+    }
+    .consolidate-btn:hover { transform: scale(1.02); }
+    .consolidate-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+    /* ─── Stats ────────────────────────────────── */
+    .stats { display: flex; gap: 10px; margin-bottom: 16px; }
+    .stat {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 12px 18px;
+      flex: 1;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .stat-num { display: block; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .stat-label { display: block; font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    /* ─── Toolbar ──────────────────────────────── */
+    .toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+    .search-box {
+      display: flex; align-items: center;
+      background: var(--card); border: 1px solid #e0ded8;
+      border-radius: 10px; padding: 8px 12px; flex: 1 1 200px;
+    }
+    .search-box input {
+      border: none; outline: none; font-size: 14px;
+      background: transparent; width: 100%; margin-left: 8px;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .chip {
+      padding: 6px 12px; border-radius: 20px; border: 1px solid #ddd;
+      background: var(--card); font-size: 12px; cursor: pointer;
+      white-space: nowrap; font-weight: 500; color: #555;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .chip.active { background: var(--dark); color: #fff; border-color: var(--dark); }
+    .tool-btn {
+      padding: 8px 14px; border-radius: 10px; border: 1px solid #ddd;
+      background: var(--card); font-size: 13px; cursor: pointer;
+      font-weight: 500; white-space: nowrap; font-family: 'DM Sans', sans-serif;
+    }
+
+    /* ─── List ─────────────────────────────────── */
+    .category-group {
+      background: var(--card);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .category-header {
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      background: #fafaf8;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cat-count {
+      font-size: 12px; color: var(--muted); background: #eee;
+      padding: 2px 8px; border-radius: 10px; font-weight: 500;
+    }
+    .list-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 18px; border-bottom: 1px solid #f2f0ec;
+      cursor: pointer; transition: background 0.1s;
+      user-select: none;
+    }
+    .list-item:last-child { border: none; }
+    .list-item:hover { background: #fafaf8; }
+    .list-item.checked { background: #f8f8f6; opacity: 0.55; }
+
+    .check {
+      width: 22px; height: 22px; border-radius: 6px;
+      border: 2px solid #ccc; display: flex; align-items: center;
+      justify-content: center; font-size: 13px; font-weight: 700;
+      color: #fff; flex-shrink: 0; transition: all 0.15s;
+    }
+    .check.on { background: var(--bring); border-color: var(--bring); }
+
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-size: 14px; font-weight: 500; }
+    .item-name.struck { text-decoration: line-through; color: var(--muted); }
+    .item-notes { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .item-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .item-amount {
+      font-size: 13px; font-weight: 600; color: #555;
+      font-family: 'JetBrains Mono', monospace; white-space: nowrap;
+    }
+    .tag {
+      width: 20px; height: 20px; border-radius: 5px;
+      color: #fff; font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tag-c { background: var(--cookidoo); }
+    .tag-b { background: var(--bring); }
+
+    .empty-state {
+      text-align: center; padding: 48px 24px; color: var(--muted);
+    }
+    .empty-state p { font-size: 15px; margin-top: 8px; }
+
+    .status-msg {
+      padding: 8px 14px; border-radius: 8px; font-size: 13px;
+      margin-top: 10px; text-align: center;
+    }
+    .status-msg.error { background: #fee; color: #c33; }
+    .status-msg.success { background: #efe; color: #2a7; }
+    .status-msg.info { background: #eef; color: #46a; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1>🛒 Einkaufsliste</h1>
+        <p class="subtitle">Cookidoo + Bring! konsolidiert</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="main">
+    <!-- Source Cards -->
+    <div class="sources">
+      <div class="source-card">
+        <div class="source-header">
+          <div class="source-icon cookidoo">👨‍🍳</div>
+          <div>
+            <div class="source-title">Cookidoo</div>
+            <div class="source-sub">Zutaten aus Einkaufsliste</div>
+          </div>
+        </div>
+        <button id="btn-load-cookidoo" class="load-btn cookidoo-btn">
+          ⬇️ Von Cookidoo laden
+        </button>
+        <div id="cookidoo-status"></div>
+        <div id="cookidoo-count" class="item-count" style="display:none"></div>
+        <div id="cookidoo-preview" class="item-preview" style="display:none"></div>
+      </div>
+
+      <div class="source-card">
+        <div class="source-header">
+          <div class="source-icon bring">🛒</div>
+          <div>
+            <div class="source-title">Bring!</div>
+            <div class="source-sub">Items aus Einkaufsliste</div>
+          </div>
+        </div>
+        <button id="btn-load-bring" class="load-btn bring-btn">
+          ⬇️ Von Bring! laden
+        </button>
+        <div id="bring-status"></div>
+        <div id="bring-count" class="item-count" style="display:none"></div>
+        <div id="bring-preview" class="item-preview" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Consolidate -->
+    <div class="consolidate-bar">
+      <button id="btn-consolidate" class="consolidate-btn" disabled>
+        Zusammenführen →
+      </button>
+    </div>
+
+    <!-- Results (hidden until consolidated) -->
+    <div id="results" style="display:none">
+      <div class="stats" id="stats-bar"></div>
+      <div class="toolbar">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="search" placeholder="Suchen...">
+        </div>
+        <div class="chips" id="filter-chips"></div>
+        <button class="tool-btn" id="btn-copy">📋 Kopieren</button>
+      </div>
+      <div id="list-container"></div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
