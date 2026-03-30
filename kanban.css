@@ -299,38 +299,48 @@ body.compact-mode .drag-handle {
 }
 
 body.compact-mode .app-shell {
-  padding: 12px;
+  padding: 10px;
 }
 
 body.compact-mode .topbar {
-  margin-bottom: 12px;
-  align-items: stretch;
-}
-
-body.compact-mode h1 {
-  font-size: clamp(1.6rem, 7vw, 2rem);
-}
-
-body.compact-mode .topbar-actions {
-  width: 100%;
+  margin-bottom: 8px;
+  align-items: center;
   gap: 8px;
 }
 
+body.compact-mode h1 {
+  font-size: clamp(1.1rem, 5.4vw, 1.4rem);
+  line-height: 1;
+}
+
+body.compact-mode .topbar-actions {
+  width: auto;
+  gap: 6px;
+  margin-left: auto;
+}
+
 body.compact-mode .topbar-actions button {
-  flex: 1;
-  padding: 0.78rem 0.95rem;
+  padding: 0.58rem 0.75rem;
+  font-size: 0.84rem;
+}
+
+body.compact-mode .topbar .eyebrow {
+  margin-bottom: 2px;
+  font-size: 0.62rem;
 }
 
 body.compact-mode .view-menu {
-  width: 100%;
+  width: auto;
 }
 
 body.compact-mode .view-menu summary {
-  width: 100%;
+  width: auto;
 }
 
 body.compact-mode .filters {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
+  gap: 8px;
+  align-items: center;
 }
 
 body.compact-mode .segment-group {
@@ -348,11 +358,18 @@ body.compact-mode .segment-group::-webkit-scrollbar {
 }
 
 body.compact-mode .search-field span {
-  font-size: 0.78rem;
+  display: none;
 }
 
 body.compact-mode .search-field input {
-  padding: 0.78rem 0.9rem;
+  padding: 0.6rem 0.72rem;
+  border-radius: 12px;
+  font-size: 0.88rem;
+}
+
+body.compact-mode .segment-button {
+  padding: 0.5rem 0.72rem;
+  font-size: 0.78rem;
 }
 
 body.compact-mode .board-wrap {
@@ -435,8 +452,28 @@ body.compact-mode .todo-meta {
   margin-bottom: 14px;
 }
 
+.column-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .column-title {
   font-size: 1.1rem;
+}
+
+.column-add-button {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: rgba(255, 251, 245, 0.85);
+  border: 1px solid var(--line);
+  color: var(--accent-strong);
+  font-size: 1.2rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .column-count {
