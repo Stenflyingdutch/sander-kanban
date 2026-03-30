@@ -96,17 +96,13 @@ function renderCompactMode() {
 }
 
 function visibleStatuses() {
-  const statuses = state.statuses.filter((status) => state.showDone || !status.done);
-  if (!state.compactMode) return statuses;
+  if (!state.compactMode) {
+    return state.statuses.filter((status) => state.showDone || !status.done);
+  }
 
-  const compactOrder = ['angriff', 'backlog', 'ideen', 'warten', 'lesen-schauen'];
-  const rank = new Map(compactOrder.map((key, index) => [key, index]));
-  return [...statuses].sort((a, b) => {
-    const rankA = rank.has(a.key) ? rank.get(a.key) : Number.MAX_SAFE_INTEGER;
-    const rankB = rank.has(b.key) ? rank.get(b.key) : Number.MAX_SAFE_INTEGER;
-    if (rankA !== rankB) return rankA - rankB;
-    return a.title.localeCompare(b.title, 'de');
-  });
+  const compactOrder = ['angriff', 'backlog', 'warten', 'ideen', 'lesen-schauen'];
+  const statusMap = new Map(state.statuses.map((status) => [status.key, status]));
+  return compactOrder.map((key) => statusMap.get(key)).filter(Boolean);
 }
 
 function renderDoneToggle() {
