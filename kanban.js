@@ -89,8 +89,8 @@ function renderCompactMode() {
   document.body.classList.toggle('compact-mode', state.compactMode);
   mobileModeButton.textContent = state.compactMode ? 'Standardansicht aktiv' : 'iPhone-Minimodus';
   mobileModeButton.setAttribute('aria-pressed', String(state.compactMode));
-  addButton.textContent = state.compactMode ? '+ Todo' : 'Todo anlegen';
-  refreshButton.textContent = state.compactMode ? '↻' : 'Neu laden';
+  addButton.textContent = 'Todo anlegen';
+  refreshButton.textContent = 'Neu laden';
   viewMenuButton.textContent = state.compactMode ? 'Filter' : 'Ansicht';
   searchInput.placeholder = state.compactMode ? 'Suchen' : 'Titel, Kategorie oder Priorität';
 }
@@ -244,11 +244,11 @@ function renderBoard() {
     const head = document.createElement('div');
     head.className = 'column-head';
     head.innerHTML = `
-      <div>
+      <div class="column-title-row">
         <h2 class="column-title">${statusTitle}</h2>
+        <button class="column-add-button" type="button" data-status="${status.key}" aria-label="Neue Aufgabe in ${statusTitle}">+</button>
       </div>
       <div class="column-head-actions">
-        <button class="column-add-button" type="button" data-status="${status.key}" aria-label="Neue Aufgabe in ${statusTitle}">+</button>
         <span class="column-count">${visibleItems.length}</span>
       </div>
     `;
