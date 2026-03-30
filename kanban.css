@@ -294,7 +294,9 @@ h1 {
 
 body.compact-mode .topbar-copy,
 body.compact-mode .status-strip,
-body.compact-mode .drag-handle {
+body.compact-mode .drag-handle,
+body.compact-mode .topbar-actions,
+body.compact-mode .filters {
   display: none;
 }
 
@@ -303,7 +305,7 @@ body.compact-mode .app-shell {
 }
 
 body.compact-mode .topbar {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   align-items: center;
   gap: 8px;
 }
@@ -313,16 +315,7 @@ body.compact-mode h1 {
   line-height: 1;
 }
 
-body.compact-mode .topbar-actions {
-  width: auto;
-  gap: 6px;
-  margin-left: auto;
-}
-
-body.compact-mode .topbar-actions button {
-  padding: 0.58rem 0.75rem;
-  font-size: 0.84rem;
-}
+body.compact-mode .topbar-actions { display: none; }
 
 body.compact-mode .topbar .eyebrow {
   margin-bottom: 2px;
@@ -335,12 +328,6 @@ body.compact-mode .view-menu {
 
 body.compact-mode .view-menu summary {
   width: auto;
-}
-
-body.compact-mode .filters {
-  margin-bottom: 8px;
-  gap: 8px;
-  align-items: center;
 }
 
 body.compact-mode .segment-group {
@@ -394,6 +381,10 @@ body.compact-mode .column-head {
 
 body.compact-mode .column-title {
   font-size: 1rem;
+}
+
+body.compact-mode .column-head-actions {
+  display: none;
 }
 
 body.compact-mode .column-list {
@@ -450,6 +441,12 @@ body.compact-mode .todo-meta {
   align-items: center;
   gap: 12px;
   margin-bottom: 14px;
+}
+
+.column-title-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .column-head-actions {
