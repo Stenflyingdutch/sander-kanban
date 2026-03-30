@@ -89,10 +89,24 @@ function renderCompactMode() {
   document.body.classList.toggle('compact-mode', state.compactMode);
   mobileModeButton.textContent = state.compactMode ? 'Standardansicht aktiv' : 'iPhone-Minimodus';
   mobileModeButton.setAttribute('aria-pressed', String(state.compactMode));
+  addButton.textContent = state.compactMode ? '+ Todo' : 'Todo anlegen';
+  refreshButton.textContent = state.compactMode ? '↻' : 'Neu laden';
+  viewMenuButton.textContent = state.compactMode ? 'Filter' : 'Ansicht';
+  searchInput.placeholder = state.compactMode ? 'Suchen' : 'Titel, Kategorie oder Priorität';
 }
 
 function visibleStatuses() {
-  return state.statuses.filter((status) => state.showDone || !status.done);
+  const statuses = state.statuses.filter((status) => state.showDone || !status.done);
+  if (!state.compactMode) return statuses;
+
+  const compactOrder = ['angriff', 'backlog', 'ideen', 'warten', 'lesen-schauen'];
+  const rank = new Map(compactOrder.map((key, index) => [key, index]));
+  return [...statuses].sort((a, b) => {
+    const rankA = rank.has(a.key) ? rank.get(a.key) : Number.MAX_SAFE_INTEGER;
+    const rankB = rank.has(b.key) ? rank.get(b.key) : Number.MAX_SAFE_INTEGER;
+    if (rankA !== rankB) return rankA - rankB;
+    return a.title.localeCompare(b.title, 'de');
+  });
 }
 
 function renderDoneToggle() {
@@ -227,13 +241,20 @@ function renderBoard() {
 
     const visibleItems = filteredItems(status.key);
 
+    const statusTitle = state.compactMode && status.key === 'lesen-schauen'
+      ? '🎬 Filme'
+      : status.title;
+
     const head = document.createElement('div');
     head.className = 'column-head';
     head.innerHTML = `
       <div>
-        <h2 class="column-title">${status.title}</h2>
+        <h2 class="column-title">${statusTitle}</h2>
       </div>
-      <span class="column-count">${visibleItems.length}</span>
+      <div class="column-head-actions">
+        <button class="column-add-button" type="button" data-status="${status.key}" aria-label="Neue Aufgabe in ${statusTitle}">+</button>
+        <span class="column-count">${visibleItems.length}</span>
+      </div>
     `;
 
     const list = document.createElement('div');
@@ -253,6 +274,10 @@ function renderBoard() {
 
     column.append(head, list);
     boardEl.appendChild(column);
+  });
+
+  boardEl.querySelectorAll('.column-add-button').forEach((button) => {
+    button.addEventListener('click', () => openDialog(null, button.dataset.status));
   });
 }
 
