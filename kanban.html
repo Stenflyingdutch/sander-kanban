@@ -3,131 +3,89 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Todos Kanban</title>
+  <title>Familienboard</title>
   <link rel="stylesheet" href="/kanban.css">
 </head>
 <body>
-  <div class="app-shell">
-    <header class="topbar">
-      <div>
-        <p class="eyebrow">Markdown Sync</p>
-        <h1>Todos als Kanban</h1>
-        <p class="topbar-copy">Dein Board bleibt direkt mit <code>Todos.md</code> verbunden.</p>
+  <main class="app-shell">
+    <section id="loginView" class="card login-card">
+      <h1>Familienboard Login</h1>
+      <p class="muted">Bitte Person wählen. Antonella benötigt ein Kennwort.</p>
+      <div class="login-actions">
+        <button class="person-btn" data-person="Sander">Als Sander</button>
+        <button class="person-btn" data-person="Nata">Als Nata</button>
       </div>
-      <div class="topbar-actions">
-        <details class="view-menu">
-          <summary id="viewMenuButton" class="ghost-button">Ansicht</summary>
-          <div class="view-menu-panel">
-            <button id="mobileModeButton" class="menu-button" type="button" aria-pressed="false">iPhone-Minimodus</button>
-            <button id="toggleDoneButton" class="menu-button" type="button" aria-pressed="false">Erledigt anzeigen</button>
-          </div>
-        </details>
-        <button id="refreshButton" class="ghost-button" type="button">Neu laden</button>
-        <button id="addButton" class="primary-button" type="button">Todo anlegen</button>
-      </div>
-    </header>
-
-    <section class="status-strip">
-      <div class="status-card">
-        <span class="status-label">Letztes Update</span>
-        <strong id="updatedAt">-</strong>
-      </div>
-      <div class="status-card">
-        <span class="status-label">Karten</span>
-        <strong id="cardCount">0</strong>
-      </div>
-      <div class="status-card accent-card">
-        <span class="status-label">Status</span>
-        <strong id="syncState">Bereit</strong>
-      </div>
-    </section>
-
-    <section class="filters">
-      <label class="search-field">
-        <span>Suche</span>
-        <input id="searchInput" type="search" placeholder="Titel, Kategorie oder Priorität">
-      </label>
-      <div class="segment-group" id="categoryFilters"></div>
-      <div class="segment-group" id="priorityFilters"></div>
-    </section>
-
-    <main class="board-wrap">
-      <div id="board" class="board" aria-live="polite"></div>
-    </main>
-  </div>
-
-  <dialog id="todoDialog" class="todo-dialog">
-    <form id="todoForm" method="dialog" class="todo-form">
-      <div class="dialog-head">
-        <div>
-          <p class="eyebrow">Todo</p>
-          <h2 id="dialogTitle">Neue Karte</h2>
+      <form id="antonellaLoginForm" class="antonella-login">
+        <label for="antonellaPassword">Antonella Kennwort</label>
+        <div class="inline-login">
+          <input id="antonellaPassword" type="password" placeholder="Kennwort" autocomplete="current-password">
+          <button type="submit" class="person-btn antonella">Als Antonella</button>
         </div>
-        <button id="closeDialogButton" class="icon-button" type="button" aria-label="Schließen">×</button>
-      </div>
+        <small id="loginError" class="error" hidden>Falsches Kennwort.</small>
+      </form>
+    </section>
 
-      <label>
-        <span>Titel</span>
-        <input id="titleInput" name="title" type="text" required maxlength="180">
-      </label>
+    <section id="appView" class="hidden">
+      <header class="topbar card">
+        <div>
+          <h2 id="welcomeText"></h2>
+          <p class="muted">Threads starten/fortführen und Monatsstunden verwalten.</p>
+        </div>
+        <button id="logoutButton" class="ghost">Logout</button>
+      </header>
 
-      <label>
-        <span>Status</span>
-        <select id="statusInput" name="status"></select>
-      </label>
+      <nav id="tabs" class="tabs card"></nav>
 
-      <div class="field-grid">
-        <label>
-          <span>Kategorie</span>
-          <select id="categoryInput" name="category">
-            <option value="">Keine</option>
-            <option value="🌐 online">🌐 online</option>
-            <option value="🏠 offline">🏠 offline</option>
-          </select>
-        </label>
+      <section id="chatPanel" class="panel card hidden">
+        <div class="chat-head">
+          <label>
+            Thema
+            <select id="topicSelect">
+              <option value="allgemeines">Allgemeines Thema</option>
+              <option value="planung">Planung</option>
+              <option value="einkauf">Einkauf</option>
+            </select>
+          </label>
+          <div class="thread-title-wrap">
+            <strong id="threadTitle">Noch kein Thread</strong>
+          </div>
+        </div>
 
-        <label>
-          <span>Priorität</span>
-          <select id="priorityInput" name="priority">
-            <option value="">Keine</option>
-            <option value="🔴 hoch">🔴 hoch</option>
-            <option value="🟡 mittel">🟡 mittel</option>
-            <option value="🟢 niedrig">🟢 niedrig</option>
-          </select>
-        </label>
-      </div>
+        <div id="messages" class="messages"></div>
 
-      <label>
-        <span>Notiz</span>
-        <textarea id="noteInput" name="note" rows="4" placeholder="Optional: Details, Kontext, nächste Schritte"></textarea>
-      </label>
+        <form id="messageForm" class="message-form">
+          <label>
+            Sender
+            <select id="senderSelect">
+              <option value="Sander">Sander</option>
+              <option value="Nata">Nata</option>
+            </select>
+          </label>
+          <input id="messageInput" type="text" placeholder="Nachricht eingeben..." required>
+          <button type="submit">Senden</button>
+        </form>
+      </section>
 
-      <menu class="dialog-actions">
-        <button id="deleteButton" class="danger-button" type="button">Löschen</button>
-        <div class="spacer"></div>
-        <button class="ghost-button" type="button" id="cancelButton">Abbrechen</button>
-        <button class="primary-button" type="submit">Speichern</button>
-      </menu>
-    </form>
-  </dialog>
-
-  <template id="cardTemplate">
-    <article class="todo-card">
-      <button class="drag-handle" type="button" aria-label="Karte verschieben">⋮⋮</button>
-      <button class="todo-main" type="button">
-        <span class="todo-title"></span>
-        <span class="todo-meta" hidden></span>
-        <span class="todo-note" hidden></span>
-      </button>
-      <div class="todo-actions">
-        <button class="mini-button complete-button" type="button" aria-label="Erledigen" title="Erledigen">✓</button>
-        <details class="card-menu">
-          <summary class="icon-button card-menu-toggle" aria-label="Kartenaktionen" title="Kartenaktionen">⋯</summary>
-          <div class="card-menu-panel"></div>
-        </details>
-      </div>
-    </article>
-  </template>
+      <section id="antonellaPanel" class="panel card hidden">
+        <div class="antonella-head">
+          <h3>Antonella – Sollstunden pro Monat</h3>
+          <p class="muted">Änderungen gelten ab ausgewähltem Monat für diesen und alle folgenden Monate.</p>
+        </div>
+        <div class="month-table-wrap">
+          <table class="month-table">
+            <thead>
+              <tr>
+                <th>Monat</th>
+                <th>Sollstunden</th>
+                <th>Aktion</th>
+              </tr>
+            </thead>
+            <tbody id="monthTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
 
   <script src="/kanban.js"></script>
 </body>
